@@ -50,7 +50,6 @@
     "kfone-mq-library":"^0.1.3",
     "mustache": "^4.2.0",
     "nest-typed-config": "^2.9.3",
-    "nodemailer": "^6.9.16",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",

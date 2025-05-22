@@ -40,74 +40,7 @@ variable "AWS_SECRET_NAME" {
   default = ""
 }
 
-
-variable "CONNECT_RMQ_APPLICATION_ID" {
-  type = string
-  default = ""
-}
-
-variable "WORKFLOW_DOMAIN" {
-  type = string
-  default = ""
-}
-
-variable "RABBITMQ_SECRET_NAME" {
-  type = string
-  default = ""
-}
-
-variable "CONNECT_RMQ_EXCHANGE_NAME" {
-  type = string
-  default = ""
-}
-
-variable "CONNECT_RMQ_EMAIL_ROUTING_KEY" {
-  type = string
-  default = ""
-}
-variable "CONNECT_RMQ_EMAIL_QUEUE_NAME" {
-  type = string
-  default = ""
-}
-
-variable "SES_SECRET_KEY" {
-  type = string
-  default = ""
-}
-
-variable "SES_TEST_EMAIL" {
-  type = string
-  default = ""
-}
-variable "SES_CONFIGURATION_SET" {
-  type = string
-  default = ""
-}
-variable "SES_FROM_EMAIL" {
-  type = string
-  default = ""
-}
-variable "CONNECT_RMQ_EMAIL_STATUS_QUEUE_NAME" {
-  type = string
-  default = ""
-}
-variable "CONNECT_RMQ_SCHEDULER_QUEUE_NAME" {
-  type = string
-  default = ""
-}
-
-
 variable "LOG_TO_DB" {
-  type = string
-  default = ""
-}
-
-variable "CONNECT_RMQ_SCHEDULER_ROUTING_KEY" {
-  type = string
-  default = ""
-}
-
-variable "CONNECT_RMQ_EMAIL_STATUS_ROUTING_KEY" {
   type = string
   default = ""
 }
