@@ -31,9 +31,3 @@ credentialsRequest:
     - 'arn:aws:secretsmanager:eu-central-1:050752635768:secret:/system/platform/rabbitmq/admin-secret-001-*'
     - 'arn:aws:secretsmanager:eu-central-1:050752635768:secret:/system/platform/*'
     - 'arn:aws:secretsmanager:eu-central-1:050752635768:secret:kfone-prd-euc1-shared-kfone-core-user-pgsql-pwd-*'
-  additionalPermissions:
-    - effect: 'Allow'
-      action:
-        - 'ses:SendEmail'
-        - 'ses:SendRawEmail'
-      resource: '*'
