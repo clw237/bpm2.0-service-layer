@@ -1,0 +1,3 @@
+.header-pages {
+  @apply relative text-xl font-bold sm:text-3xl;
+}

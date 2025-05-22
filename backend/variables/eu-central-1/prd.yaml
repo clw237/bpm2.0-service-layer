@@ -1,0 +1,39 @@
+environmentVariables:
+  USE_JSON_LOGGER:
+    secret: false
+    value: '"False"'
+  DEBUG:
+    value: 'deploy'
+  SCHEMA_NAME:
+    value: 'ccf'
+  AWS_SECRET_NAME:
+    value: '/system/platform/postgres/shared/ccf-user-pwd'
+  AWS_REGION:
+    secret: false
+    value: 'eu-central-1'
+  Environment:
+    secret: false
+    value: 'prd'
+  RABBITMQ_SECRET_NAME:
+    value: '/system/platform/rabbitmq/admin-secret-001'
+  NODE_TLS_REJECT_UNAUTHORIZED:
+    value: '"0"'
+  REMOTE_LOADER_DB_URL:
+    value: 'http://localhost:2772/applications/kfone-prd-euc1-appconfig-app-001-common/environments/prd/configurations/PgSQL-shared'
+  REMOTE_LOADER_COMMONCONFIG_URL:
+    value: 'http://localhost:2772/applications/kfone-prd-euc1-appconfig-app-001-common/environments/prd/configurations/Common-Config'
+  REMOTE_LOADER_LOGCONFIG_URL:
+    value: 'http://localhost:2772/applications/kfone-prd-euc1-appconfig-app-001-common/environments/prd/configurations/Logging'
+  REMOTE_LOADER_CONNECT_CONFIG_URL:
+    value: 'http://localhost:2772/applications/kfone-prd-euc1-appconfig-app-001-connect/environments/prd/configurations/connect-config'
+credentialsRequest:
+  secret_resource_arn:
+    - 'arn:aws:secretsmanager:eu-central-1:050752635768:secret:/system/platform/rabbitmq/admin-secret-001-*'
+    - 'arn:aws:secretsmanager:eu-central-1:050752635768:secret:/system/platform/*'
+    - 'arn:aws:secretsmanager:eu-central-1:050752635768:secret:kfone-prd-euc1-shared-kfone-core-user-pgsql-pwd-*'
+  additionalPermissions:
+    - effect: 'Allow'
+      action:
+        - 'ses:SendEmail'
+        - 'ses:SendRawEmail'
+      resource: '*'

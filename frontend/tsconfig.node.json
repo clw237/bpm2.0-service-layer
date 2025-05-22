@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    // Composite and Module Handling
+    "composite": true, // Enable composite projects, which allows for incremental builds and project references
+    "allowSyntheticDefaultImports": true // Allow default imports from modules with no default export
+  },
+  "include": ["vite.config.ts"] // Specify files or directories to include in the compilation
+}

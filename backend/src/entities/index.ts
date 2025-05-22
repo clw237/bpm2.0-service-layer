@@ -1,0 +1,21 @@
+// Here we are using Barrel Export pattern to export all entities from "entity" folder at once.
+export { default as EmailCategoryMergeFields } from './email-category-merge-fields.entity';
+export { default as EmailCategoryScheduleType } from './email-category-schedule-type.entity';
+export { default as EmailCategory } from './email-category.entity';
+export { default as EmailMessage } from './email-message.entity';
+export { default as EmailSend } from './email-send.entity';
+export { default as EmailSentResults } from './email-sent-results.entity';
+export { default as EmailTemplateLanguages } from './email-template-languages.entity';
+export { default as EmailTemplate, ItemType } from './email-template.entity';
+export { default as EmailWhiteList } from './email-whitelist.entity';
+export { default as Log } from './log.entity';
+export { default as ScheduleTaskLog } from './schedule-task-log.entity';
+export { default as ScheduleTypes } from './schedule.types.entity';
+export { default as SchedulerEmails } from './scheduler-emails.entity';
+export { default as Schedulers } from './schedulers.entity';
+export { default as UserPoolAttributesDef } from './user-pool-attributes-def.entity';
+export { default as UserPoolAttributes } from './user-pool-attributes.entity';
+export { default as UserPoolLog } from './user-pool-log.entity';
+export { default as UserPool } from './user-pool.entity';
+export { default as User } from './user.entity';
+export { default as Workspace } from './workspace.entity';

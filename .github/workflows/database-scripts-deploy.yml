@@ -1,0 +1,116 @@
+name: BPM DB Yuniql Deployment Pipeline
+run-name: BPM_DB_yuniql_${{ inputs.environment }}_${{ inputs.region }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'Environment'
+        required: true
+        default: 'dev'
+        options:
+          - sbx
+          - dev
+          - qa1
+          - stg
+          - prd
+      region:
+        type: choice
+        description: 'AWS Region'
+        required: true
+        default: us-east-1
+        options:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+      rds_instanceName:
+        type: choice
+        description: 'RDS Instance Name'
+        required: true
+        default: shared
+        options:
+          - shared
+jobs:
+  run-sql-scripts:
+    runs-on: ${{ inputs.environment }}-${{ fromJSON('{"us-east-1":"use1","eu-central-1":"euc1","eu-west-1":"euw1","us-west-2":"usw2"}')[inputs.region] }}-app
+    defaults:
+      run:
+        working-directory: yuniql
+    permissions:
+      id-token: write   # Grant the workflow permission to request OIDC token
+      contents: read    # Grant read permissions to the repository contents      
+    steps:    
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4 # More information on this action can be found below in the 'AWS Credentials' section
+        with:
+          role-to-assume: ${{ secrets[format('{0}_{1}_app_runner_iam_role', inputs.environment, fromJSON('{"us-east-1":"use1","eu-central-1":"euc1","eu-west-1":"euw1","us-west-2":"usw2"}')[inputs.region])] }}
+          role-skip-session-tagging: true
+          aws-region: ${{ inputs.region }}
+          role-duration-seconds: 1200
+      - name: Adjust region
+        run: |
+          if [ "${{ inputs.region }}" == "us-east-1" ]; then
+            echo "REGION=use1" >> $GITHUB_ENV
+          elif [ "${{ inputs.region }}" == "eu-central-1" ]; then
+            echo "REGION=euc1" >> $GITHUB_ENV
+          elif [ "${{ inputs.region }}" == "us-west-2" ]; then
+            echo "REGION=usw2" >> $GITHUB_ENV
+          elif [ "${{ inputs.region }}" == "eu-west-1" ]; then
+            echo "REGION=euw1" >> $GITHUB_ENV
+          fi
+        shell: bash
+      - name: Get Secrets by Name and by ARN
+        uses: aws-actions/aws-secretsmanager-get-secrets@v2
+        with:
+          secret-ids: |
+            ,/system/platform/postgres/shared/ccf-user-pwd
+          parse-json-secrets: true
+ 
+      - name: Start AppConfig Configuration Session
+        id: start_appconfig_session
+        run: |
+          session=$(aws appconfigdata start-configuration-session --application-identifier "kfone-${{ inputs.environment }}-${{ env.REGION }}-appconfig-app-001-common" --environment-identifier "${{ inputs.environment }}" --configuration-profile-identifier "PgSQL-${{ inputs.rds_instanceName }}" --region ${{ inputs.region }})
+          session_token=$(echo $session | jq -r .InitialConfigurationToken)
+          echo "session_token=$session_token" >> $GITHUB_ENV
+        shell: /usr/bin/bash -e {0}
+ 
+      - name: Get AppConfig Configuration
+        id: get_appconfig
+        run: |
+          aws appconfigdata get-latest-configuration --configuration-token $session_token --region ${{ inputs.region }} configuration-output.json
+ 
+          export HOST=$(jq -r '.host' configuration-output.json)
+          export PORT=$(jq -r '.port' configuration-output.json)
+          export DATABASE=$(jq -r '.database' configuration-output.json)
+          echo "HOST=$HOST" >> $GITHUB_ENV
+          echo "PORT=$PORT" >> $GITHUB_ENV
+          echo "DATABASE=$DATABASE" >> $GITHUB_ENV
+        shell: /usr/bin/bash -e {0}
+
+      # Need this commented code when we are using the runner for the first time to install yuniql on the runner
+
+      - name: Verify Yuniql installation
+        run: |
+          which yuniql && exit 0
+          echo $PATH
+          sudo curl https://github.com/rdagumampan/yuniql/releases/download/v1.1.55/yuniql-cli-linux-x64-latest.tar.gz -L -o yuniql.tar.gz
+          sudo tar -xvzf yuniql.tar.gz -C /bin
+
+          cd /bin
+          sudo chmod +x yuniql
+
+          yuniql version || exit 0
+
+      - name: Run Yuniql CLI    # the secret values are getting from secret manager
+        env:
+          HOST: ${{ env.HOST }}
+          PORT: ${{ env.PORT }}
+          DATABASE: ${{ env.DATABASE }}
+        run: |
+          yuniql init
+          echo "Init complete"
+          yuniql run -p './scripts' --meta-table db_migration_yuniql_ccf --platform postgresql --debug -c "Host=${{ env.HOST }};Port=${{ env.PORT }};Username=${{ env.USERNAME }};Password=${{ env.PASSWORD }};Database=${{ env.DATABASE }};SslMode=Require;TrustServerCertificate=true"

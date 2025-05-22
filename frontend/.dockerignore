@@ -1,0 +1,11 @@
+/node_modules
+/build
+/public
+/dist
+/coverage
+.husky
+.vscode
+.dockerignore
+.gitignore
+.prettierrc
+README.md

@@ -1,0 +1,7 @@
+/* This is parent file for all css */
+@import './page.css';
+
+/* Required Tailwind CSS Configuration */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

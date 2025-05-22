@@ -1,0 +1,65 @@
+import { IIconList } from 'model/interfaces';
+import { FC } from 'react';
+
+export const ListIcon: FC = ({ id = 'KF_List_Icon', className = '', props }: IIconList) => {
+  return (
+    <svg
+      id={id}
+      data-testid={id}
+      className={`mx-4 ${className}`}
+      width='15px'
+      height='15px'
+      viewBox='0 0 24 24'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      {...props}
+    >
+      <rect
+        x='18'
+        y='9'
+        width='4'
+        height='4'
+        rx='2'
+        transform='rotate(90 18 9)'
+        fill='#2A4157'
+        fillOpacity='0.24'
+        stroke='#222222'
+        strokeWidth='1.2'
+      />
+      <rect
+        x='18'
+        y='17'
+        width='4'
+        height='4'
+        rx='2'
+        transform='rotate(90 18 17)'
+        fill='#2A4157'
+        fillOpacity='0.24'
+        stroke='#222222'
+        strokeWidth='1.2'
+      />
+      <rect
+        x='3'
+        y='7'
+        width='4'
+        height='4'
+        rx='2'
+        transform='rotate(-90 3 7)'
+        fill='#2A4157'
+        fillOpacity='0.24'
+        stroke='#222222'
+        strokeWidth='1.2'
+      />
+      <path
+        d='M5 8V15C5 16.8856 5 17.8284 5.58579 18.4142C6.17157 19 7.11438 19 9 19H14'
+        stroke='#222222'
+        strokeWidth='1.2'
+      />
+      <path
+        d='M5 7V7C5 8.88562 5 9.82843 5.58579 10.4142C6.17157 11 7.11438 11 9 11H14'
+        stroke='#222222'
+        strokeWidth='1.2'
+      />
+    </svg>
+  );
+};

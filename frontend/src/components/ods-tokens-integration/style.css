@@ -1,0 +1,3 @@
+.kf1-button-sample {
+  @apply w-40 rounded-ods-border-radius-medium bg-ods-color-primary-400 p-2 text-center text-ods-text-button-large;
+}

@@ -1,0 +1,14 @@
+export { default as EmailCategoryScheduleTypeRepository } from './email-category-schedule-type.repository';
+export { default as EmailCategoryRepository } from './email-category.repository';
+export { default as EmailSendRepository } from './email-send.repository';
+export { default as EmailSentResultsRepository } from './email-sent-results.repository';
+export { default as EmailTemplateRepository } from './email-template.repository';
+export { default as EmailWhiteListRepository } from './email-whitelist.repository';
+export { default as ScheduleTaskLogRepository } from './schedule-task-log.repository';
+export { default as SchedulerEmailsRepository } from './scheduler-email.repository';
+export { default as UserPoolAttributesDefRepository } from './user-pool-attributes-def.repository';
+export { default as UserPoolAttributesRepository } from './user-pool-attributes.repository';
+export { default as UserPoolLogRepository } from './user-pool-log.repository';
+export { default as UserPoolRepository } from './user-pool.repository';
+export { default as UserRepository } from './user.repository';
+export { default as WorkspaceRepository } from './workspace.repository';

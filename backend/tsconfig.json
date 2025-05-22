@@ -1,0 +1,46 @@
+{
+  "compilerOptions": {
+    // Module Resolution
+    "module": "commonjs", // Use the commonjs module system
+
+    // Declaration and Metadata
+    "declaration": true, // Generate .d.ts declaration files
+    "emitDecoratorMetadata": true, // Emit metadata for decorators
+    "experimentalDecorators": true, // Enable experimental support for decorators
+
+    // Import and Module Handling
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
+
+    // Target and Output
+    "target": "ES2022", // Set the target ECMAScript version
+    "outDir": "./dist", // Specify the output directory for the compiled files
+    "sourceMap": true, // Generate source maps for the compiled files
+    "removeComments": true, // Remove comments from the output
+
+    // Base URL and Path Mapping
+    "baseUrl": "./", // Set the base directory for resolving non-relative module names
+    "paths": {
+      // Map module aliases to directories
+      "modules": ["src/modules"],
+      "controllers": ["src/controllers"],
+      "services": ["src/services"],
+      "repositories": ["src/repositories"],
+      "dtos": ["src/dtos"],
+      "entities": ["src/entities"],
+      "config": ["src/config"],
+      "utilities": ["src/utilities"]
+    },
+
+    // Compilation Performance
+    "incremental": true, // Enable incremental compilation
+
+    // Type Checking
+    "skipLibCheck": true, // Skip type checking of all declaration files
+    "strictNullChecks": true, // Enable strict null checks
+    "noImplicitAny": false, // Allow variables to implicitly have an 'any' type
+    "strictBindCallApply": false, // Disable strict 'bind', 'call', and 'apply' methods checks
+    "forceConsistentCasingInFileNames": false, // Do not force consistent casing in file names
+    "noFallthroughCasesInSwitch": false // Do not report errors for fallthrough cases in switch statements
+  },
+  "include": ["src"] // Specify files or directories to include in the compilation
+}

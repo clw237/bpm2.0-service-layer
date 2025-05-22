@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    // Target, Library and Output
+    "target": "ES2022", // Set the target ECMAScript version
+    "lib": ["ES2022", "DOM", "DOM.Iterable"], // Specify library files to include in the compilation
+    "removeComments": true, // Remove comments from the output
+
+    // Class Fields and Module System
+    "useDefineForClassFields": true, // Use the ECMAScript standard for class fields
+
+    // Module System and Resolution
+    "module": "ESNext", // Use the ESNext module system
+    "moduleResolution": "bundler", // Use bundler-style module resolution
+    "allowImportingTsExtensions": true, // Allow importing TypeScript extensions
+    "resolveJsonModule": true, // Allow importing JSON modules
+    "isolatedModules": true, // Ensure that each file can be safely transpiled independently
+
+    // Emission and JSX
+    "noEmit": true, // Do not output any files; useful for type-checking only
+    "jsx": "react-jsx", // Use the new JSX transform for React
+
+    // Type Checking and Linting
+    "strict": true, // Enable all strict type-checking options
+    "strictNullChecks": true, // Enable strict null checks
+    "skipLibCheck": true // Skip type checking of all declaration files
+  },
+  "include": ["src"], // Specify files or directories to include in the compilation
+  "references": [{ "path": "./tsconfig.node.json" }] // Reference another TypeScript configuration
+}

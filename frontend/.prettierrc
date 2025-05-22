@@ -1,0 +1,33 @@
+{
+  "arrowParens": "always",
+  "attributeGroups": ["^class$", "^(id|name)$", "$DEFAULT", "^data-", "^aria-"],
+  "attributeSort": "ASC",
+  "bracketSameLine": false,
+  "bracketSpacing": true,
+  "editorconfig": true,
+  "embeddedLanguageFormatting": "auto",
+  "enable": ["eslint", "prettier"],
+  "endOfLine": "auto",
+  "htmlWhitespaceSensitivity": "css",
+  "jsxSingleQuote": true,
+  "jsxBracketSameLine": false,
+  "organizeImportsSkipDestructiveCodeActions": true,
+  "plugins": [
+    "prettier-plugin-organize-imports",
+    "prettier-plugin-organize-attributes",
+    "prettier-plugin-packagejson",
+    "prettier-plugin-tailwindcss"
+  ],
+  "pluginSearchDirs": false,
+  "printWidth": 100,
+  "proseWrap": "preserve",
+  "quoteProps": "as-needed",
+  "resolveGlobalModules": true,
+  "semi": true,
+  "singleAttributePerLine": false,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "tailwindConfig": "./tailwind.config.js",
+  "trailingComma": "all",
+  "useTabs": false
+}

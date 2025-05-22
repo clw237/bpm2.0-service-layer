@@ -1,0 +1,36 @@
+name: kfone-bpm-appconfig-deploy
+run-name: kfone-bpm-appconfig-deploy-${{ inputs.environment }}-${{ inputs.region }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: "Environment"
+        required: true
+        default: dev
+        options:
+          - sbx
+          - dev
+          - qa1
+          - stg
+          - prd
+      region:
+        type: choice
+        description: "AWS Region"
+        required: true
+        default: us-east-1
+        options:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+
+jobs:
+  Terraform:
+    uses: HayGroup/kfone-common/.github/workflows/terraform-deploy-app-iac-0.0.1.yml@main
+    secrets: inherit
+    with:
+      environment: ${{ inputs.environment }}
+      region: ${{ inputs.region }}
+      working_directory: iac/app-config

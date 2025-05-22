@@ -1,0 +1,15 @@
+POST https://connect-api.apps.app01.dev-use1.int-kfone.com/v1/email/webhook
+Content-Type: application/json
+
+{
+    "Type": "Notification",
+    "MessageId": "013b8eab-fb20-5c9d-b6c0-eec9807a44b4",
+    "TopicArn": "arn:aws:sns:us-east-1:011528287407:connect-email-tracking-notification",
+    "Subject": "Amazon SES Email Event Notification",
+    "Message": "{\"eventType\":\"Delivery\",\"mail\":{\"timestamp\":\"2025-03-29T22:50:01.465Z\",\"source\":\"noreply@kornferrytalent-dev.com\",\"sourceArn\":\"arn:aws:ses:us-east-1:011528287407:identity/kornferrytalent-dev.com\",\"sendingAccountId\":\"011528287407\",\"messageId\":\"01000195e4190b79-50a3b473-f55f-4320-ad7e-1442c8ba2fc1-000000\",\"destination\":[\"KFONE_DEV@kornferry.com\"],\"headersTruncated\":false,\"headers\":[{\"name\":\"From\",\"value\":\"noreply@kornferrytalent-dev.com\"},{\"name\":\"To\",\"value\":\"KFONE_DEV@kornferry.com\"},{\"name\":\"Subject\",\"value\":\"Reminder - en-US\"},{\"name\":\"Message-ID\",\"value\":\"<643eaf6f-7ba3-0d37-cc34-54a68039e5c8@kornferrytalent-dev.com>\"},{\"name\":\"Content-Transfer-Encoding\",\"value\":\"quoted-printable\"},{\"name\":\"Date\",\"value\":\"Sat, 29 Mar 2025 22:50:01 +0000\"},{\"name\":\"MIME-Version\",\"value\":\"1.0\"},{\"name\":\"Content-Type\",\"value\":\"text/html; charset=utf-8\"}],\"commonHeaders\":{\"from\":[\"noreply@kornferrytalent-dev.com\"],\"date\":\"Sat, 29 Mar 2025 22:50:01 +0000\",\"to\":[\"KFONE_DEV@kornferry.com\"],\"messageId\":\"01000195e4190b79-50a3b473-f55f-4320-ad7e-1442c8ba2fc1-000000\",\"subject\":\"Reminder - en-US\"},\"tags\":{\"ses:source-tls-version\":[\"TLSv1.3\"],\"ses:operation\":[\"SendRawEmail\"],\"ses:configuration-set\":[\"connect-email\"],\"ses:outgoing-tls-version\":[\"TLSv1.2\"],\"ses:source-ip\":[\"54.208.196.208\"],\"ses:from-domain\":[\"kornferrytalent-dev.com\"],\"ses:caller-identity\":[\"kfone-dev-ses-user\"],\"ses:outgoing-ip\":[\"54.240.8.59\"]}},\"delivery\":{\"timestamp\":\"2025-03-29T22:50:02.542Z\",\"processingTimeMillis\":1077,\"recipients\":[\"KFONE_DEV@kornferry.com\"],\"smtpResponse\":\"250 ok:  Message 93979122 accepted\",\"remoteMtaIp\":\"68.232.141.211\",\"reportingMTA\":\"a8-59.smtp-out.amazonses.com\"}}\n",
+    "Timestamp": "2025-03-29T22:50:02.651Z",
+    "SignatureVersion": "1",
+    "Signature": "goN1gVzo26KIXdD7e8WD/ihpG3szWHChX8aDtoo4H2NlsqoPvm3Ld2amKvAGdRUZuFVzsIZTb0Lue5hfBp0lQhL9/s/F6M0qcOK+w9Xctix4i2ODVeX10l10KSvVJkukZ6Ov21bHaVm1TMsQoEbjH/AKYJ75m4QnX+qTJIqrOZdZ5wpaE3haPcPpnNGD66T9r74ZFPW/Osj5T8aYIWWHFA1gHqCukYLCN+kFlZJzODPizV5OaFUNJwzIgJs6ov37mINu8N6oMOseoXWhkre6B6j6RejgSU1q9YBcHxeg+dvQknxnG8VDEtNMGgzDK/ttKLRyoZjc0I9+uqWHWrPgSA==",
+    "SigningCertURL": "https://sns.us-east-1.amazonaws.com/SimpleNotificationService-9c6465fa7f48f5cacd23014631ec1136.pem",
+    "UnsubscribeURL": "https://sns.us-east-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:us-east-1:011528287407:connect-email-tracking-notification:3710d491-f5b1-41a1-bf06-002a8b209cf3"
+}

@@ -1,0 +1,10 @@
+# This is a template for your .npmrc file.
+# Follow the steps below to configure your npm authentication:
+# 1. Copy this file `.npmrc.example` to `.npmrc`
+# 2. Uncomment the lines below and add your email and authentication token.
+
+# email=add your email here
+always-auth=true
+save-exact=true
+registry=https://kfydigital.jfrog.io/artifactory/api/npm/kf1-npm-virtual/
+# //kfydigital... add authentication token string line here
