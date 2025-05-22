@@ -24,7 +24,7 @@ environmentVariables:
     value: 'http://localhost:2772/applications/kfone-qa1-use1-appconfig-app-001-common/environments/qa1/configurations/Common-Config'
   REMOTE_LOADER_LOGCONFIG_URL:
     value: 'http://localhost:2772/applications/kfone-qa1-use1-appconfig-app-001-common/environments/qa1/configurations/Logging'
-  REMOTE_LOADER_CONNECT_CONFIG_URL:
+  REMOTE_LOADER_BPM_CONFIG_URL:
     value: 'http://localhost:2772/applications/kfone-qa1-use1-appconfig-app-001-bpm/environments/qa1/configurations/bmp-config'
 credentialsRequest:
   secret_resource_arn:

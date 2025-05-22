@@ -24,7 +24,7 @@ environmentVariables:
     value: 'http://localhost:2772/applications/kfone-prd-use1-appconfig-app-001-common/environments/prd/configurations/Common-Config'
   REMOTE_LOADER_LOGCONFIG_URL:
     value: 'http://localhost:2772/applications/kfone-prd-use1-appconfig-app-001-common/environments/prd/configurations/Logging'
-  REMOTE_LOADER_CONNECT_CONFIG_URL:
+  REMOTE_LOADER_BPM_CONFIG_URL:
     value: 'http://localhost:2772/applications/kfone-prd-use1-appconfig-app-001-bpm/environments/prd/configurations/bmp-config'
 credentialsRequest:
   secret_resource_arn:

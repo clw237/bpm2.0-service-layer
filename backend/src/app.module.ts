@@ -44,7 +44,7 @@ import { LoggerModule } from './logger';
               LOG_TO_DB: process.env.LOG_TO_DB,
               LOGIN_URL: process.env.LOGIN_URL,
             })
-          : remoteLoader(`${process.env.REMOTE_LOADER_CONNECT_CONFIG_URL}`, {
+          : remoteLoader(`${process.env.REMOTE_LOADER_BPM_CONFIG_URL}`, {
               type: () => 'json',
               shouldRetry: (response) => response.status !== 200,
               retries: 3,
