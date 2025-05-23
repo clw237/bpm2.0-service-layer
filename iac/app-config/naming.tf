@@ -10,7 +10,7 @@ module "naming" {
   KFDAppSubgroup    = var.infra_KFDAppSubGroup
   KFDAppGroup       = var.infra_KFDAppGroup
   Environment       = var.Env
-  Accessability     = var.Accessability
+  Accessibility     = var.Accessibility
   Classification    = var.Classification
   Owner             = var.Owner
   HasPII            = var.HasPII

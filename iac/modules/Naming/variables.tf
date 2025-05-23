@@ -1,7 +1,7 @@
-variable "Accessability" {
+variable "Accessibility" {
   type    = string
   validation {
-    condition     = length(var.Accessability) > 0
+    condition     = length(var.Accessibility) > 0
     error_message = "Not null."
   }
   description = "Accessibility tag. Available values are [private, public, intranet, authenticated, anonymous]"

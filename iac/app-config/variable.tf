@@ -59,7 +59,7 @@ variable "Env" {
   default = ""
   description = "Envrionment for tag"
 }
-variable "Accessability" {
+variable "Accessibility" {
   type        = string
   description = "Accessibility tag. Available values are [private, public, intranet, authenticated, anonymous]"
 }
