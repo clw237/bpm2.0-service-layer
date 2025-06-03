@@ -1,17 +1,29 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { Participant } from './participant.entity';
 
 @Entity()
 export class Campaign {
-  @PrimaryGeneratedColumn('uuid')
+  @Column({ type: 'uuid', primary: true })
   id: string;
 
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamptz' })
   deadline: Date;
 
-  @Column({ type: 'varchar', length: 255 })
-  status: 'draft' | 'active' | 'completed' | 'archived';
+  @Column({ name: 'reminder_offset_days' })
+  reminderDaysBefore: number;
+
+  @Column({ name: 'max_retry_count' })
+  maxRetries: number;
+
+  @Column({ name: 'retry_interval_days' })
+  retryIntervalDays: number;
 
   @OneToMany(() => Participant, (participant) => participant.campaign)
   participants: Participant[];
+
+  @Column({ default: 'DRAFT' })
+  status: string;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lastSync: Date;
 }

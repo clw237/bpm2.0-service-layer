@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { AuditRepository } from 'src/repositories/audit.repository';
 import { BpmCampaignDto } from '../dtos/bpmCampaign.dto';
 import { APIError } from '../types/errors';
 
@@ -8,7 +9,16 @@ import { APIError } from '../types/errors';
 export class BpmService {
   private readonly client: Axios.AxiosInstance;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private auditRepo: AuditRepository,
+  ) {
+    /*
+    ---Best Practice Violations---
+    Hardcoded timeout values without circuit breakers
+    No request/response logging to PostgreSQL
+    Missing idempotency keys for retry-able operations
+    */
     this.client = axios.create({
       baseURL: this.configService.get<string>('bpm.url'),
       timeout: 5000,
@@ -36,5 +46,12 @@ export class BpmService {
       payload,
     );
     return response.data.campaignId; // Now type-safe
+  }
+
+  async getCampaignStatus(campaignId: string): Promise<string> {
+    const response = await this.client.get<{ status: string }>(
+      `/campaigns/${campaignId}/status`,
+    );
+    return response.data.status;
   }
 }

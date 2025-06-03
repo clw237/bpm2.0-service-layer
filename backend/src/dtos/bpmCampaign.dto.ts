@@ -1,23 +1,35 @@
-import { Type } from 'class-transformer';
-import { IsArray, IsISO8601, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsISO8601,
+  IsPositive,
+  IsUUID,
+} from 'class-validator';
 
-export class BpmParticipantDto {
-  @IsString()
+class BpmParticipantDto {
+  @IsUUID()
   id: string;
 
-  @IsString()
+  @IsEmail()
   email: string;
 }
 
 export class BpmCampaignDto {
-  @IsString()
+  @IsUUID()
   id: string;
 
   @IsISO8601()
-  deadline: string; // ISO8601 date string
+  deadline: string;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => BpmParticipantDto)
   participants: BpmParticipantDto[];
+
+  @IsPositive()
+  reminderDaysBefore: number;
+
+  @IsPositive()
+  maxRetries: number;
+
+  @IsPositive()
+  retryIntervalDays: number;
 }
