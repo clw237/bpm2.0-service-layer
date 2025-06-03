@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { BpmCampaignDto } from '../../dtos/bpmCampaign.dto';
-import { APIError } from '../../types/errors';
+import { BpmCampaignDto } from '../dtos/bpmCampaign.dto';
+import { APIError } from '../types/errors';
 
 @Injectable()
-export class BpmClient {
+export class BpmService {
   private readonly client: Axios.AxiosInstance;
 
   constructor(private configService: ConfigService) {

@@ -9,8 +9,13 @@ import {
 } from 'modules';
 import { remoteLoader, TypedConfigModule } from 'nest-typed-config';
 import configuration from './config/configuration';
+import { BpmController } from './controllers/bpm.controller';
 import { ConnectApplicationConfig, DatabaseConfig } from './dtos/appconfig.dto';
+import ExceptionLoggerFilter from './filters/exception-filter';
 import { LoggerModule } from './logger';
+import { BpmService } from './services/bpm.service';
+import { WebhookService } from './services/webhook.service';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -58,6 +63,12 @@ import { LoggerModule } from './logger';
     HealthModule,
     AppConfigModule,
     AppSettingsModule,
+  ],
+  controllers: [BpmController],
+  providers: [
+    BpmService,
+    WebhookService,
+    { provide: 'APP_FILTER', useClass: ExceptionLoggerFilter },
   ],
 })
 export class AppModule {}

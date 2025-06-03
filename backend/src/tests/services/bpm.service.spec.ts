@@ -1,19 +1,19 @@
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import axios from 'axios';
-import { BpmClient } from '../../modules/bpm/bpmClient';
+import { BpmService } from '../../services/bpm.service';
 import { APIError } from '../../types/errors';
 
 jest.mock('axios');
 
 describe('BpmClient', () => {
-  let bpmClient: BpmClient;
+  let bpmClient: BpmService;
   let configService: ConfigService;
 
   beforeEach(async () => {
     const moduleRef = await Test.createTestingModule({
       providers: [
-        BpmClient,
+        BpmService,
         {
           provide: ConfigService,
           useValue: {
@@ -26,7 +26,7 @@ describe('BpmClient', () => {
       ],
     }).compile();
 
-    bpmClient = moduleRef.get<BpmClient>(BpmClient);
+    bpmClient = moduleRef.get<BpmService>(BpmService);
     configService = moduleRef.get<ConfigService>(ConfigService);
   });
 

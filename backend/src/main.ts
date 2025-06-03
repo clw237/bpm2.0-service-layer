@@ -7,15 +7,15 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { SwaggerConfigService } from './config/swagger.config';
-import ExceptionFilter from './filters/exception-filter';
-import { LoggerService } from './logger';
+//import ExceptionFilter from './filters/exception-filter';
+//import { LoggerService } from './logger';
 
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     const port = '8081'; //DO NOT CHANGE THIS LINE  (if you change the port number ,deployment will fail). Do not check in the changes to this line.
 
-    const logger = app.get(LoggerService);
+    //const logger = app.get(LoggerService);
     // Enable URI Based Versioning
     app.enableVersioning({
       type: VersioningType.URI,
@@ -24,7 +24,8 @@ async function bootstrap() {
     });
 
     app.enableCors();
-    app.useGlobalFilters(new ExceptionFilter(logger));
+    // Let NestJS handle instantiation and injection
+    //app.useGlobalFilters(new ExceptionFilter(logger));
 
     // ValidationPipe is used for class-validator and class-transformer validation
     app.useGlobalPipes(

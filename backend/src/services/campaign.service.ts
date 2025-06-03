@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Campaign } from '../entities/campaign.entity';
 import { BpmCampaignDto } from '../interfaces/bpm.interface';
-import { BpmClient } from '../modules/bpm/bpmClient';
+import { BpmService } from './bpm.service';
 
 @Injectable()
 export class CampaignService {
-  constructor(private readonly bpmClient: BpmClient) {}
+  constructor(private readonly bpmClient: BpmService) {}
 
   async createCampaign(campaign: Campaign): Promise<string> {
     const bpmPayload = this.mapToBpmDto(campaign);
