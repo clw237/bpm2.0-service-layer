@@ -8,6 +8,7 @@ import {
   PostgresDatabaseModule,
 } from 'modules';
 import { remoteLoader, TypedConfigModule } from 'nest-typed-config';
+import configuration from './config/configuration';
 import { ConnectApplicationConfig, DatabaseConfig } from './dtos/appconfig.dto';
 import { LoggerModule } from './logger';
 @Module({
@@ -15,6 +16,7 @@ import { LoggerModule } from './logger';
     ConfigModule.forRoot({
       envFilePath: './src/config/env/dev.env',
       isGlobal: true,
+      load: [configuration],
     }),
     TypedConfigModule.forRootAsync({
       schema: DatabaseConfig,
