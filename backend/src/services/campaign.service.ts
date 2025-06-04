@@ -46,8 +46,8 @@ export default class CampaignIntegrationService {
         username: p.username,
       })),
       reminderDaysBefore: campaign.reminderDaysBefore,
-      //maxRetries: campaign.maxRetries,
-      //retryIntervalDays: campaign.retryIntervalDays,
+      assessments: campaign.assessments,
+      status: campaign.status,
     };
 
     try {

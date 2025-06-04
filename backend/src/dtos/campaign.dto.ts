@@ -1,4 +1,10 @@
-import { IsArray, IsISO8601, IsPositive, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsISO8601,
+  IsPositive,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { CreateUserDto } from 'dtos';
 
 export default class CampaignDto {
@@ -14,9 +20,10 @@ export default class CampaignDto {
   @IsPositive()
   reminderDaysBefore: number;
 
-  /*   @IsPositive()
-  maxRetries: number;
+  @IsString()
+  status: string;
 
-  @IsPositive()
-  retryIntervalDays: number; */
+  @IsArray()
+  @IsString({ each: true })
+  assessments: string[];
 }

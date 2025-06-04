@@ -16,6 +16,7 @@ export type CampaignLaunchParams = Pick<
   | 'deadline'
   | 'participants'
   | 'reminderDaysBefore'
-  | 'maxRetries'
-  | 'retryIntervalDays'
+  | 'assessments'
+  | 'status'
+  | 'lastSync'
 >;

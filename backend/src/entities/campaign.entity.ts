@@ -1,5 +1,12 @@
+import { User } from 'entities';
 import { Column, Entity, ManyToMany } from 'typeorm';
-import { User } from './';
+
+export type CampaignOption = 'Traits' | 'Competencies' | 'Drivers';
+export const DEFAULT_OPTIONS: CampaignOption[] = [
+  'Traits',
+  'Competencies',
+  'Drivers',
+];
 
 @Entity()
 export default class Campaign {
@@ -12,12 +19,6 @@ export default class Campaign {
   @Column({ name: 'reminder_offset_days' })
   reminderDaysBefore: number;
 
-  @Column({ name: 'max_retry_count' })
-  maxRetries: number;
-
-  @Column({ name: 'retry_interval_days' })
-  retryIntervalDays: number;
-
   @ManyToMany(() => User, (user) => user.campaigns)
   participants: User[];
 
@@ -26,4 +27,11 @@ export default class Campaign {
 
   @Column({ type: 'timestamptz', nullable: true })
   lastSync: Date;
+
+  @Column({
+    type: 'text',
+    array: true,
+    default: () => `'{Traits,Competencies,Drivers}'`,
+  })
+  assessments: CampaignOption[];
 }
