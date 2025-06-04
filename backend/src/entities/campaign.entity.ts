@@ -1,8 +1,8 @@
-import { Column, Entity, OneToMany } from 'typeorm';
-import { Participant } from './participant.entity';
+import { Column, Entity, ManyToMany } from 'typeorm';
+import { User } from './';
 
 @Entity()
-export class Campaign {
+export default class Campaign {
   @Column({ type: 'uuid', primary: true })
   id: string;
 
@@ -18,8 +18,8 @@ export class Campaign {
   @Column({ name: 'retry_interval_days' })
   retryIntervalDays: number;
 
-  @OneToMany(() => Participant, (participant) => participant.campaign)
-  participants: Participant[];
+  @ManyToMany(() => User, (user) => user.campaigns)
+  participants: User[];
 
   @Column({ default: 'DRAFT' })
   status: string;

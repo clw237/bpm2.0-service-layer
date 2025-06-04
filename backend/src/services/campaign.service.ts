@@ -1,50 +1,77 @@
+import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
+
 import { Injectable } from '@nestjs/common';
-import { BpmCampaignDto } from '../dtos/bpmCampaign.dto';
-import { Campaign } from '../entities/campaign.entity';
-import { AuditRepository } from '../repositories/audit.repository';
-import { CampaignRepository } from '../repositories/campaign.repository';
-import { BpmService } from './bpm.service';
+import { CampaignDto } from 'src/dtos';
+import { Campaign } from 'src/entities';
+import { CampaignRepository, LogRepository } from 'src/repositories';
+import { APIError } from 'src/types/errors';
 
 @Injectable()
-export class CampaignService {
+export default class CampaignIntegrationService {
+  private readonly client: Axios.AxiosInstance;
+
   constructor(
-    private readonly bpmService: BpmService,
-    private readonly campaignRepo: CampaignRepository,
-    private readonly auditRepo: AuditRepository,
-  ) {}
+    private readonly configService: ConfigService,
+    private readonly campaignRepository: CampaignRepository,
+    private readonly logRepository: LogRepository,
+  ) {
+    this.client = axios.create({
+      baseURL: this.configService.get('bpm.url'),
+      timeout: 5000,
+      headers: {
+        'X-API-Key': this.configService.get('bpm.apiKey'),
+        'Content-Type': 'application/json',
+      },
+    });
+
+    this.client.interceptors.response.use(
+      (response: any) => response,
+      (error: any) => {
+        throw new APIError(
+          error.response?.status ?? 503,
+          'BPM 2.0 Layer connection failed',
+          error.response?.data,
+        );
+      },
+    );
+  }
 
   async launchCampaign(campaign: Campaign): Promise<string> {
-    const bpmPayload: BpmCampaignDto = {
+    const payload: CampaignDto = {
       id: campaign.id,
       deadline: campaign.deadline.toISOString(),
       participants: campaign.participants.map((p) => ({
-        id: p.id,
         email: p.email,
+        username: p.username,
       })),
       reminderDaysBefore: campaign.reminderDaysBefore,
-      maxRetries: campaign.maxRetries,
-      retryIntervalDays: campaign.retryIntervalDays,
+      //maxRetries: campaign.maxRetries,
+      //retryIntervalDays: campaign.retryIntervalDays,
     };
 
     try {
-      const campaignId = await this.bpmService.launchCampaign(bpmPayload);
+      const response = await this.client.post<{ campaignId: string }>(
+        '/campaigns',
+        payload,
+      );
+      const campaignId = response.data.campaignId;
 
-      // Audit successful launch
-      await this.auditRepo.logOperation('CAMPAIGN_LAUNCH', bpmPayload, {
-        campaignId,
-        status: 'SUCCESS',
+      await this.logRepository.logOperation('info', 'CAMPAIGN_LAUNCH', {
+        payload,
+        result: { campaignId, status: 'SUCCESS' },
       });
 
-      // Log campaign launch in repository
-      await this.campaignRepo.logLaunch(campaign.id);
-
+      await this.campaignRepository.logLaunch(campaign.id);
       return campaignId;
     } catch (error) {
-      // Audit failed launch
-      await this.auditRepo.logOperation('CAMPAIGN_LAUNCH_ERROR', bpmPayload, {
-        error: error.message,
-        stack: error.stack,
-        status: 'FAILED',
+      await this.logRepository.logOperation('error', 'CAMPAIGN_LAUNCH_ERROR', {
+        payload,
+        error: {
+          message: error.message,
+          stack: error.stack,
+          status: 'FAILED',
+        },
       });
 
       throw new Error(`Campaign launch failed: ${error.message}`);
@@ -52,12 +79,15 @@ export class CampaignService {
   }
 
   async getCampaignStatus(campaignId: string): Promise<string> {
-    return await this.bpmService.getCampaignStatus(campaignId);
+    const response = await this.client.get<{ status: string }>(
+      `/campaigns/${campaignId}/status`,
+    );
+    return response.data.status;
   }
 
   async syncWithBpmEngine(campaignId: string): Promise<void> {
-    const status = await this.bpmService.getCampaignStatus(campaignId);
-    await this.campaignRepo.update(campaignId, {
+    const status = await this.getCampaignStatus(campaignId);
+    await this.campaignRepository.update(campaignId, {
       status,
       lastSync: new Date(),
     });

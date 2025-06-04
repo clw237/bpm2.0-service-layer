@@ -1,7 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Test } from '@nestjs/testing';
 import axios from 'axios';
-import { BpmService } from '../../services/bpm.service';
+import { BpmService } from '../../services/campaign-integration.service';
 import { APIError } from '../../types/errors';
 
 jest.mock('axios');

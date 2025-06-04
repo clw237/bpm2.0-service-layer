@@ -1,19 +1,9 @@
-import {
-  Body,
-  Controller,
-  Post,
-  Req,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Controller, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { createHmac } from 'crypto';
 import { Request } from 'express';
-import {
-  BpmInactiveDto,
-  BpmReminderDto,
-  BpmSummaryDto,
-} from '../dtos/webhook.dto';
-import { WebhookService } from '../services/webhook.service';
+//import { InactiveDto, ReminderDto, SummaryDto } from 'src/dtos';
+import { WebhookService } from 'src/services';
 
 // HMAC Validation Utility (could also be moved to src/utils/security.ts)
 function validateSignature(
@@ -48,8 +38,9 @@ export class BpmController {
     }
   }
 
+  /*
   @Post('reminder')
-  handleReminder(@Body() payload: BpmReminderDto, @Req() req: Request) {
+  async handleReminder(@Body() payload: ReminderDto, @Req() req: Request) {
     this.validateWebhook(req, payload);
     return this.webhookService.processReminder(payload);
   }
@@ -67,5 +58,5 @@ export class BpmController {
   async handleSummary(@Body() payload: BpmSummaryDto, @Req() req: Request) {
     this.validateWebhook(req, payload);
     return this.webhookService.processCampaignSummary(payload);
-  }
+  } */
 }

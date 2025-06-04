@@ -1,6 +1,6 @@
-import { Campaign } from 'src/entities/campaign.entity';
+import { Campaign } from 'src/entities';
 
-export interface BpmOperationResult {
+export interface OperationResult {
   campaignId: string;
   success: boolean;
   retryCount?: number;

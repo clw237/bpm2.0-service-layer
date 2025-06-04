@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { AuditRepository } from 'src/repositories/audit.repository';
-import { BpmCampaignDto } from '../dtos/bpmCampaign.dto';
-import { APIError } from '../types/errors';
+import { CampaignDto } from 'src/dtos';
+import { LogRepository } from 'src/repositories';
+import { APIError } from 'src/types/errors';
 
 @Injectable()
-export class BpmService {
+export default class CampaignIntegrationService {
   private readonly client: Axios.AxiosInstance;
 
   constructor(
     private configService: ConfigService,
-    private auditRepo: AuditRepository,
+    private auditRepo: LogRepository,
   ) {
     /*
     ---Best Practice Violations---
@@ -40,7 +40,7 @@ export class BpmService {
     );
   }
 
-  async launchCampaign(payload: BpmCampaignDto): Promise<string> {
+  async launchCampaign(payload: CampaignDto): Promise<string> {
     const response = await this.client.post<{ campaignId: string }>(
       '/campaigns',
       payload,

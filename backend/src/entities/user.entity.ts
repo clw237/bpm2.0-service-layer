@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Campaign } from 'entities';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export default class User {
@@ -16,4 +17,7 @@ export default class User {
 
   @Column()
   lastModifiedAt: Date;
+
+  @ManyToMany(() => Campaign, (campaign) => campaign.participants)
+  campaigns: Campaign[];
 }

@@ -97,4 +97,22 @@ export default class UserRepository {
       this.logger.info('Finally block');
     }
   }
+
+  async findAllByCampaign(campaignId: string): Promise<User[]> {
+    try {
+      this.logger.info(`Getting all users for campaign ${campaignId}`);
+      return await this.usersRepository.find({
+        where: {
+          campaigns: { id: campaignId },
+        },
+        relations: ['campaigns'],
+      });
+    } catch (err) {
+      this.logger.error(
+        `Failed to get users for campaign ${campaignId}`,
+        err.stack,
+      );
+      throw err;
+    }
+  }
 }

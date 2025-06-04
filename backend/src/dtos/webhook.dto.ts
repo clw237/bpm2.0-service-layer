@@ -1,7 +1,7 @@
-import { IsArray, IsEmail, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsEmail, IsNumber, IsString, IsUUID } from 'class-validator';
 
 // For /api/reminders/send webhook
-export class BpmReminderDto {
+export class ReminderDto {
   @IsString()
   campaignId: string;
 
@@ -20,7 +20,7 @@ export class BpmReminderDto {
 }
 
 // For /api/participants/markInactive webhook
-export class BpmInactiveDto {
+export class InactiveDto {
   @IsString()
   campaignId: string;
 
@@ -29,7 +29,7 @@ export class BpmInactiveDto {
 }
 
 // For /api/campaigns/summary webhook
-export class BpmSummaryDto {
+export class SummaryDto {
   @IsString()
   campaignId: string;
 
@@ -41,4 +41,9 @@ export class BpmSummaryDto {
 
   @IsNumber()
   incompleteCount: number;
+}
+
+export class WebhookDto {
+  @IsUUID()
+  participantId: number;
 }
