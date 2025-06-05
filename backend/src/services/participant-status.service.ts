@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { firstValueFrom } from 'rxjs';
 import { Campaign } from 'src/entities';
@@ -25,7 +25,10 @@ export default class ParticipantStatusService {
       const campaign = await this.campaignRepository.findOneBy({
         id: campaignId,
       });
-
+      // validate campaign data
+      if (!campaign?.assessments.includes(assessment)) {
+        throw new BadRequestException(`Invalid assessment type: ${assessment}`);
+      }
       if (!campaign?.bpmWorkflowInstanceId) {
         throw new Error(`No BPM instance found for campaign ${campaignId}`);
       }

@@ -49,7 +49,7 @@ export class CampaignUpdateDto {
 }
 
 export class ParticipantStatusUpdateDto {
-  @IsString()
+  @IsIn(['traits', 'drivers', 'competencies'])
   assessment: string;
 
   @IsEnum(['COMPLETED', 'PENDING'])

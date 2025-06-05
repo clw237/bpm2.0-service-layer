@@ -25,7 +25,7 @@ export default class WebhookController {
   @HttpCode(HttpStatus.OK)
   async handleReminder(
     @Body() payload: ReminderDto,
-    @Headers('x-signature') signature: string,
+    @Headers('x-bpm-signature') signature: string,
   ) {
     try {
       this.verifyWebhookSignature(JSON.stringify(payload), signature);
