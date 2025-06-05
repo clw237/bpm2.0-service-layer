@@ -23,10 +23,10 @@ export default class CampaignRepository {
       where: { id },
       relations: relations ?? [],
     });
-    return campaign ?? undefined;
+    return campaign ?? undefined; // Ensures undefined, not null
   }
 
-  findActiveCampaigns(): Promise<Campaign[]> {
+  async findActiveCampaigns(): Promise<Campaign[]> {
     return this.campaignRepository
       .createQueryBuilder('campaign')
       .where('campaign.deadline > :now', { now: new Date() })
@@ -43,7 +43,31 @@ export default class CampaignRepository {
     );
   }
 
-  async update(id: string, partial: Partial<Campaign>): Promise<void> {
+  async update(
+    id: string,
+    partial: Partial<Campaign>,
+  ): Promise<Campaign | undefined> {
     await this.campaignRepository.update(id, partial);
+    return this.findById(id);
+  }
+
+  async findByInstanceId(instanceId: string): Promise<Campaign | undefined> {
+    const campaign = await this.campaignRepository.findOne({
+      where: {
+        bpmWorkflowInstanceId: instanceId,
+      },
+    });
+    return campaign ?? undefined; // Convert null to undefined
+  }
+
+  async findByCampaignId(
+    campaignId: string,
+    relations?: string[],
+  ): Promise<Campaign | undefined> {
+    const campaign = await this.campaignRepository.findOne({
+      where: { id: campaignId },
+      relations: relations ?? [],
+    });
+    return campaign ?? undefined; // Ensures undefined, not null
   }
 }

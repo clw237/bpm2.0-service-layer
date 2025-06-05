@@ -15,7 +15,7 @@ import {
 } from 'src/dtos';
 import { CampaignService, ParticipantStatusService } from 'src/services';
 
-@Controller('api/campaigns')
+@Controller('campaigns')
 export default class CampaignController {
   private readonly logger = new Logger(CampaignController.name);
 
@@ -29,11 +29,11 @@ export default class CampaignController {
   async createAndLaunchCampaign(@Body() campaignData: CreateCampaignDto) {
     try {
       this.logger.log(`Launching new campaign: ${campaignData.name}`);
-      const workflowId =
+      const instanceId =
         await this.campaignService.launchCampaign(campaignData);
       return {
         campaignId: campaignData.id,
-        bpmWorkflowId: workflowId,
+        bpmWorkflowInstanceId: instanceId,
         status: 'ACTIVE',
       };
     } catch (error) {
@@ -42,21 +42,21 @@ export default class CampaignController {
     }
   }
 
-  @Put(':campaignId/participants')
+  @Put(':id/participants')
   @HttpCode(HttpStatus.OK)
   async updateCampaignParticipants(
-    @Param('campaignId') campaignId: string,
+    @Param('id') campaignId: string,
     @Body() updateData: CampaignUpdateDto,
   ) {
     try {
       this.logger.log(`Updating participants for campaign ${campaignId}`);
-      await this.campaignService.updateParticipants(
+      await this.campaignService.addParticipants(
         campaignId,
         updateData.participantIds,
       );
       return {
         campaignId,
-        updatedParticipants: updateData.participantIds.length,
+        addedParticipants: updateData.participantIds.length,
       };
     } catch (error) {
       this.logger.error(`Participant update failed: ${error.message}`);
@@ -83,7 +83,7 @@ export default class CampaignController {
         campaignId,
         participantId,
         assessment: statusUpdate.assessment,
-        status: 'RECEIVED',
+        status: 'UPDATED',
       };
     } catch (error) {
       this.logger.error(`Status update failed: ${error.message}`);

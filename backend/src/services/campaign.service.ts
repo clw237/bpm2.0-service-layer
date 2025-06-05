@@ -1,12 +1,15 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { firstValueFrom } from 'rxjs';
 import { CreateCampaignDto } from 'src/dtos';
 import { Campaign, User } from 'src/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export default class CampaignService {
+  private readonly logger = new Logger(CampaignService.name);
+
   constructor(
     @InjectRepository(Campaign)
     private campaignRepository: Repository<Campaign>,
@@ -16,60 +19,91 @@ export default class CampaignService {
   ) {}
 
   async launchCampaign(dto: CreateCampaignDto): Promise<string> {
-    const campaign = this.campaignRepository.create({
-      ...dto,
-      deadline: new Date(dto.deadline),
-      participants: await this.userRepository.findByIds(dto.participantIds),
-    });
+    try {
+      // Create campaign entity with workflow template reference
+      const campaign = this.campaignRepository.create({
+        ...dto,
+        deadline: new Date(dto.deadline),
+        participants: await this.userRepository.findByIds(dto.participantIds),
+      });
 
-    const savedCampaign = await this.campaignRepository.save(campaign);
+      const savedCampaign = await this.campaignRepository.save(campaign);
 
-    const bpmPayload = {
-      CampaignId: savedCampaign.id,
-      AssessmentDeadline: savedCampaign.deadline.toISOString(),
-      ReminderDaysBefore: savedCampaign.reminderDaysBefore,
-      Participants: savedCampaign.participants.map((p) => ({
-        ParticipantId: p.id,
-        Email: p.email,
-        Status: this.createInitialStatus(savedCampaign.assessments),
-      })),
-    };
+      // Prepare BPM payload with workflow template ID
+      const bpmPayload = {
+        CampaignId: savedCampaign.id,
+        WorkflowTemplateId: dto.workflowTemplateId,
+        AssessmentDeadline: savedCampaign.deadline.toISOString(),
+        ReminderDaysBefore: savedCampaign.reminderDaysBefore,
+        Participants: savedCampaign.participants.map((p) => ({
+          ParticipantId: p.id,
+          Email: p.email,
+          Status: this.createInitialStatus(dto.assessments),
+        })),
+      };
 
-    const response = await this.httpService.axiosRef.post(
-      '/decisions/api/flow/launch/GenericCampaignAssessmentWorkflow',
-      bpmPayload,
-    );
+      // Launch specific workflow template
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `/decisions/api/flow/launch/${dto.workflowTemplateId}`,
+          bpmPayload,
+        ),
+      );
 
-    await this.campaignRepository.update(savedCampaign.id, {
-      bpmWorkflowId: response.data.workflowId,
-    });
+      // Store BPM instance ID
+      await this.campaignRepository.update(savedCampaign.id, {
+        bpmWorkflowInstanceId: response.data.instanceId,
+      });
 
-    return response.data.workflowId;
+      this.logger.log(
+        `Launched campaign ${savedCampaign.id} with BPM instance ${response.data.instanceId}`,
+      );
+      return response.data.instanceId;
+    } catch (error) {
+      this.logger.error(`Campaign launch failed: ${error.message}`);
+      throw error;
+    }
   }
 
-  async updateParticipants(campaignId: string, participantIds: string[]) {
-    const campaign = await this.campaignRepository.findOneOrFail({
-      where: { id: campaignId },
-      relations: ['participants'],
-    });
+  async addParticipants(
+    campaignId: string,
+    participantIds: string[],
+  ): Promise<void> {
+    try {
+      const campaign = await this.campaignRepository.findOneOrFail({
+        where: { id: campaignId },
+        relations: ['participants'],
+      });
 
-    const newParticipants = await this.userRepository.findByIds(participantIds);
+      const newParticipants =
+        await this.userRepository.findByIds(participantIds);
 
-    // Sync with Decisions BPM
-    await this.httpService.axiosRef.post(
-      `/decisions/api/campaigns/${campaign.bpmWorkflowId}/participants`,
-      newParticipants.map((p) => ({
-        ParticipantId: p.id,
-        Email: p.email,
-        Status: this.createInitialStatus(campaign.assessments),
-      })),
-    );
+      // Append new participants (no removal per requirements)
+      campaign.participants = [...campaign.participants, ...newParticipants];
+      await this.campaignRepository.save(campaign);
 
-    campaign.participants = newParticipants;
-    return this.campaignRepository.save(campaign);
+      // Update Decisions BPM instance
+      await firstValueFrom(
+        this.httpService.post(
+          `/decisions/api/instance/${campaign.bpmWorkflowInstanceId}/participants`,
+          newParticipants.map((p) => ({
+            ParticipantId: p.id,
+            Email: p.email,
+            Status: this.createInitialStatus(campaign.assessments),
+          })),
+        ),
+      );
+
+      this.logger.log(
+        `Added ${newParticipants.length} participants to campaign ${campaignId}`,
+      );
+    } catch (error) {
+      this.logger.error(`Failed to add participants: ${error.message}`);
+      throw error;
+    }
   }
 
-  private createInitialStatus(assessments: string[]) {
+  private createInitialStatus(assessments: string[]): Record<string, string> {
     return assessments.reduce((acc, assessment) => {
       acc[assessment] = 'pending';
       return acc;
