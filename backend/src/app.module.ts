@@ -8,13 +8,13 @@ import {
   PostgresDatabaseModule,
 } from 'modules';
 import { remoteLoader, TypedConfigModule } from 'nest-typed-config';
+import { CampaignController, WebhookController } from 'src/controllers';
 import {
-  CampaignIntegrationService,
   CampaignService,
-  WebhookService,
+  NotificationService,
+  ParticipantStatusService,
 } from 'src/services';
 import configuration from './config/configuration';
-import { BpmController } from './controllers/bpm.controller';
 import { ConnectApplicationConfig, DatabaseConfig } from './dtos/appconfig.dto';
 import ExceptionLoggerFilter from './filters/exception-filter';
 import { LoggerModule } from './logger';
@@ -67,11 +67,11 @@ import { LoggerModule } from './logger';
     AppConfigModule,
     AppSettingsModule,
   ],
-  controllers: [BpmController],
+  controllers: [CampaignController, WebhookController],
   providers: [
     CampaignService,
-    CampaignIntegrationService,
-    WebhookService,
+    NotificationService,
+    ParticipantStatusService,
     { provide: 'APP_FILTER', useClass: ExceptionLoggerFilter },
   ],
 })

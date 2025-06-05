@@ -1,95 +1,78 @@
-import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
-
+import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { CampaignDto } from 'src/dtos';
-import { Campaign } from 'src/entities';
-import { CampaignRepository, LogRepository } from 'src/repositories';
-import { APIError } from 'src/types/errors';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateCampaignDto } from 'src/dtos';
+import { Campaign, User } from 'src/entities';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export default class CampaignIntegrationService {
-  private readonly client: Axios.AxiosInstance;
-
+export default class CampaignService {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly campaignRepository: CampaignRepository,
-    private readonly logRepository: LogRepository,
-  ) {
-    this.client = axios.create({
-      baseURL: this.configService.get('bpm.url'),
-      timeout: 5000,
-      headers: {
-        'X-API-Key': this.configService.get('bpm.apiKey'),
-        'Content-Type': 'application/json',
-      },
+    @InjectRepository(Campaign)
+    private campaignRepository: Repository<Campaign>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+    private httpService: HttpService,
+  ) {}
+
+  async launchCampaign(dto: CreateCampaignDto): Promise<string> {
+    const campaign = this.campaignRepository.create({
+      ...dto,
+      deadline: new Date(dto.deadline),
+      participants: await this.userRepository.findByIds(dto.participantIds),
     });
 
-    this.client.interceptors.response.use(
-      (response: any) => response,
-      (error: any) => {
-        throw new APIError(
-          error.response?.status ?? 503,
-          'BPM 2.0 Layer connection failed',
-          error.response?.data,
-        );
-      },
-    );
-  }
+    const savedCampaign = await this.campaignRepository.save(campaign);
 
-  async launchCampaign(campaign: Campaign): Promise<string> {
-    const payload: CampaignDto = {
-      id: campaign.id,
-      deadline: campaign.deadline.toISOString(),
-      participants: campaign.participants.map((p) => ({
-        email: p.email,
-        username: p.username,
+    const bpmPayload = {
+      CampaignId: savedCampaign.id,
+      AssessmentDeadline: savedCampaign.deadline.toISOString(),
+      ReminderDaysBefore: savedCampaign.reminderDaysBefore,
+      Participants: savedCampaign.participants.map((p) => ({
+        ParticipantId: p.id,
+        Email: p.email,
+        Status: this.createInitialStatus(savedCampaign.assessments),
       })),
-      reminderDaysBefore: campaign.reminderDaysBefore,
-      assessments: campaign.assessments,
-      status: campaign.status,
     };
 
-    try {
-      const response = await this.client.post<{ campaignId: string }>(
-        '/campaigns',
-        payload,
-      );
-      const campaignId = response.data.campaignId;
-
-      await this.logRepository.logOperation('info', 'CAMPAIGN_LAUNCH', {
-        payload,
-        result: { campaignId, status: 'SUCCESS' },
-      });
-
-      await this.campaignRepository.logLaunch(campaign.id);
-      return campaignId;
-    } catch (error) {
-      await this.logRepository.logOperation('error', 'CAMPAIGN_LAUNCH_ERROR', {
-        payload,
-        error: {
-          message: error.message,
-          stack: error.stack,
-          status: 'FAILED',
-        },
-      });
-
-      throw new Error(`Campaign launch failed: ${error.message}`);
-    }
-  }
-
-  async getCampaignStatus(campaignId: string): Promise<string> {
-    const response = await this.client.get<{ status: string }>(
-      `/campaigns/${campaignId}/status`,
+    const response = await this.httpService.axiosRef.post(
+      '/decisions/api/flow/launch/GenericCampaignAssessmentWorkflow',
+      bpmPayload,
     );
-    return response.data.status;
+
+    await this.campaignRepository.update(savedCampaign.id, {
+      bpmWorkflowId: response.data.workflowId,
+    });
+
+    return response.data.workflowId;
   }
 
-  async syncWithBpmEngine(campaignId: string): Promise<void> {
-    const status = await this.getCampaignStatus(campaignId);
-    await this.campaignRepository.update(campaignId, {
-      status,
-      lastSync: new Date(),
+  async updateParticipants(campaignId: string, participantIds: string[]) {
+    const campaign = await this.campaignRepository.findOneOrFail({
+      where: { id: campaignId },
+      relations: ['participants'],
     });
+
+    const newParticipants = await this.userRepository.findByIds(participantIds);
+
+    // Sync with Decisions BPM
+    await this.httpService.axiosRef.post(
+      `/decisions/api/campaigns/${campaign.bpmWorkflowId}/participants`,
+      newParticipants.map((p) => ({
+        ParticipantId: p.id,
+        Email: p.email,
+        Status: this.createInitialStatus(campaign.assessments),
+      })),
+    );
+
+    campaign.participants = newParticipants;
+    return this.campaignRepository.save(campaign);
+  }
+
+  private createInitialStatus(assessments: string[]) {
+    return assessments.reduce((acc, assessment) => {
+      acc[assessment] = 'pending';
+      return acc;
+    }, {});
   }
 }

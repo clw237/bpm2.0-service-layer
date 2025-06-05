@@ -1,37 +1,31 @@
-import { User } from 'entities';
-import { Column, Entity, ManyToMany } from 'typeorm';
-
-export type CampaignOption = 'Traits' | 'Competencies' | 'Drivers';
-export const DEFAULT_OPTIONS: CampaignOption[] = [
-  'Traits',
-  'Competencies',
-  'Drivers',
-];
+import { User } from 'src/entities';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export default class Campaign {
-  @Column({ type: 'uuid', primary: true })
+  @PrimaryColumn()
   id: string;
 
   @Column({ type: 'timestamptz' })
   deadline: Date;
 
-  @Column({ name: 'reminder_offset_days' })
+  @Column()
   reminderDaysBefore: number;
 
-  @ManyToMany(() => User, (user) => user.campaigns)
+  @Column('text', { array: true })
+  assessments: string[];
+
+  @Column({ nullable: true })
+  bpmWorkflowId: string;
+
+  @ManyToMany(() => User)
+  @JoinTable({
+    name: 'campaign_participants',
+    joinColumn: { name: 'campaign_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+  })
   participants: User[];
 
-  @Column({ default: 'DRAFT' })
-  status: string;
-
-  @Column({ type: 'timestamptz', nullable: true })
-  lastSync: Date;
-
-  @Column({
-    type: 'text',
-    array: true,
-    default: () => `'{Traits,Competencies,Drivers}'`,
-  })
-  assessments: CampaignOption[];
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
 }

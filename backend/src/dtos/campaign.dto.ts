@@ -1,29 +1,34 @@
-import {
-  IsArray,
-  IsISO8601,
-  IsPositive,
-  IsString,
-  IsUUID,
-} from 'class-validator';
-import { CreateUserDto } from 'dtos';
+import { IsArray, IsEnum, IsISO8601, IsString, IsUUID } from 'class-validator';
 
-export default class CampaignDto {
+export class CreateCampaignDto {
   @IsUUID()
   id: string;
+
+  @IsString()
+  name: string;
 
   @IsISO8601()
   deadline: string;
 
   @IsArray()
-  participants: CreateUserDto[];
-
-  @IsPositive()
-  reminderDaysBefore: number;
-
-  @IsString()
-  status: string;
+  @IsUUID('all', { each: true })
+  participantIds: string[];
 
   @IsArray()
   @IsString({ each: true })
   assessments: string[];
+}
+
+export class CampaignUpdateDto {
+  @IsArray()
+  @IsUUID('all', { each: true })
+  participantIds: string[];
+}
+
+export class ParticipantStatusUpdateDto {
+  @IsString()
+  assessment: string;
+
+  @IsEnum(['COMPLETED', 'PENDING'])
+  status: string;
 }
