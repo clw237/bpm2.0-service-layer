@@ -18,6 +18,7 @@ import configuration from './config/configuration';
 import { ConnectApplicationConfig, DatabaseConfig } from './dtos/appconfig.dto';
 import ExceptionLoggerFilter from './filters/exception-filter';
 import { LoggerModule } from './logger';
+import { RabbitMQModule } from './rabbitmq.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { LoggerModule } from './logger';
     HealthModule,
     AppConfigModule,
     AppSettingsModule,
+    RabbitMQModule,
   ],
   controllers: [CampaignController, WebhookController],
   providers: [

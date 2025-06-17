@@ -1,74 +1,46 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { Injectable, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
-import { Campaign } from 'src/entities';
-import { Repository } from 'typeorm';
 
 @Injectable()
-export default class ParticipantStatusService {
+export class ParticipantStatusService {
   private readonly logger = new Logger(ParticipantStatusService.name);
 
-  constructor(
-    @InjectRepository(Campaign)
-    private campaignRepository: Repository<Campaign>,
-    private httpService: HttpService,
-  ) {}
+  constructor(private readonly httpService: HttpService) {}
 
-  async updateAssessmentStatus(
-    campaignId: string,
-    participantId: string,
-    assessment: string,
-    status: 'completed' | 'pending',
-  ) {
-    try {
-      const campaign = await this.campaignRepository.findOneBy({
-        id: campaignId,
-      });
-      // validate campaign data
-      if (!campaign?.assessments.includes(assessment)) {
-        throw new BadRequestException(`Invalid assessment type: ${assessment}`);
-      }
-      if (!campaign?.bpmWorkflowInstanceId) {
-        throw new Error(`No BPM instance found for campaign ${campaignId}`);
-      }
+  async updateParticipantAssessment(event: any) {
+    const payload = {
+      campaignId: event.campaignId,
+      participantId: event.participantId,
+      assessment: event.assessment,
+      status: event.status,
+      timestamp: event.timestamp,
+    };
+    this.logger.log(
+      `Updating participant assessment: ${JSON.stringify(payload)}`,
+    );
+    await firstValueFrom(
+      this.httpService.post(
+        `${process.env.DECISIONS_BPM_URL}/correlate/${payload.campaignId}/assessment`,
+        payload,
+      ),
+    );
+  }
 
-      // Construct Decisions BPM API payload
-      const bpmPayload = {
-        instanceId: campaign.bpmWorkflowInstanceId,
-        participantId,
-        variableUpdates: {
-          [assessment.toLowerCase()]: status.toUpperCase(),
-        },
-      };
-
-      // Update BPM workflow instance data
-      const response = await firstValueFrom(
-        this.httpService.post(
-          `/decisions/api/instance/${campaign.bpmWorkflowInstanceId}/variables`,
-          bpmPayload,
-          {
-            headers: {
-              'Content-Type': 'application/vnd.bpm.api+json',
-              Authorization: `Bearer ${process.env.DECISIONS_BPM_TOKEN}`,
-            },
-          },
-        ),
-      );
-
-      this.logger.log(
-        `Updated ${assessment} status for participant ${participantId} in campaign ${campaignId}`,
-      );
-      return {
-        success: true,
-        instanceId: campaign.bpmWorkflowInstanceId,
-        sequenceNumber: response.data.sequenceNumber,
-      };
-    } catch (error) {
-      this.logger.error(
-        `Status update failed for campaign ${campaignId}: ${error.message}`,
-      );
-      throw error;
-    }
+  async updateRaterAssessment(event: any) {
+    const payload = {
+      campaignId: event.campaignId,
+      raterId: event.raterId,
+      assessment: event.assessment,
+      status: event.status,
+      timestamp: event.timestamp,
+    };
+    this.logger.log(`Updating rater assessment: ${JSON.stringify(payload)}`);
+    await firstValueFrom(
+      this.httpService.post(
+        `${process.env.DECISIONS_BPM_URL}/correlate/${payload.campaignId}/rater-assessment`,
+        payload,
+      ),
+    );
   }
 }
