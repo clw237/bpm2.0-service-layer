@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { ReminderDto } from 'src/dtos';
 
 @Injectable()
 export class NotificationService {
@@ -8,7 +9,7 @@ export class NotificationService {
 
   constructor(private readonly httpService: HttpService) {}
 
-  async sendReminder(payload: any) {
+  async sendReminder(payload: ReminderDto) {
     this.logger.log(`Forwarding reminder to KFOne: ${JSON.stringify(payload)}`);
     await firstValueFrom(
       this.httpService.post(

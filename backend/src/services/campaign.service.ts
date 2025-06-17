@@ -2,6 +2,11 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 
+import {
+  CampaignLaunchedEventDto,
+  ParticipantsAddedEventDto,
+} from '../dtos/kfone-event.dto';
+
 @Injectable()
 export default class CampaignService {
   private readonly logger = new Logger(CampaignService.name);
@@ -16,7 +21,7 @@ export default class CampaignService {
    * - deadline
    * - participants: array of { participantId, email }
    */
-  async launchCampaignWorkflow(event: any) {
+  async launchCampaignWorkflow(event: CampaignLaunchedEventDto) {
     const payload = {
       businessKey: event.campaignId,
       workflowTemplateId: event.workflowTemplateId,
@@ -38,7 +43,7 @@ export default class CampaignService {
    * - campaignId
    * - participants: array of { participantId, email }
    */
-  async addParticipants(event: any): Promise<void> {
+  async addParticipants(event: ParticipantsAddedEventDto): Promise<void> {
     const payload = {
       campaignId: event.campaignId,
       participants: event.participants,

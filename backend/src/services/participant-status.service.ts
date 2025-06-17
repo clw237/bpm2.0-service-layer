@@ -2,13 +2,29 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 
+import {
+  ParticipantCompletedEventDto,
+  RaterAssessmentCompletedEventDto,
+} from '../dtos/kfone-event.dto';
+
 @Injectable()
 export class ParticipantStatusService {
   private readonly logger = new Logger(ParticipantStatusService.name);
 
   constructor(private readonly httpService: HttpService) {}
 
-  async updateParticipantAssessment(event: any) {
+  /**
+   * Updates Decisions BPM when a participant completes an assessment.
+   * Expects event to include:
+   * - campaignId
+   * - participantId
+   * - assessment
+   * - status
+   * - timestamp
+   */
+  async updateParticipantAssessment(
+    event: ParticipantCompletedEventDto,
+  ): Promise<void> {
     const payload = {
       campaignId: event.campaignId,
       participantId: event.participantId,
@@ -17,7 +33,7 @@ export class ParticipantStatusService {
       timestamp: event.timestamp,
     };
     this.logger.log(
-      `Updating participant assessment: ${JSON.stringify(payload)}`,
+      `Participant ${payload.participantId} completed assessment ${payload.assessment} for campaign ${payload.campaignId}`,
     );
     await firstValueFrom(
       this.httpService.post(
@@ -27,7 +43,18 @@ export class ParticipantStatusService {
     );
   }
 
-  async updateRaterAssessment(event: any) {
+  /**
+   * Updates Decisions BPM when a rater completes an assessment.
+   * Expects event to include:
+   * - campaignId
+   * - raterId
+   * - assessment
+   * - status
+   * - timestamp
+   */
+  async updateRaterAssessment(
+    event: RaterAssessmentCompletedEventDto,
+  ): Promise<void> {
     const payload = {
       campaignId: event.campaignId,
       raterId: event.raterId,
@@ -35,7 +62,9 @@ export class ParticipantStatusService {
       status: event.status,
       timestamp: event.timestamp,
     };
-    this.logger.log(`Updating rater assessment: ${JSON.stringify(payload)}`);
+    this.logger.log(
+      `Rater ${payload.raterId} completed assessment ${payload.assessment} for campaign ${payload.campaignId}`,
+    );
     await firstValueFrom(
       this.httpService.post(
         `${process.env.DECISIONS_BPM_URL}/correlate/${payload.campaignId}/rater-assessment`,

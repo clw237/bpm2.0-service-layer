@@ -8,7 +8,7 @@ import {
   PostgresDatabaseModule,
 } from 'modules';
 import { remoteLoader, TypedConfigModule } from 'nest-typed-config';
-import { CampaignController, WebhookController } from 'src/controllers';
+import { EventConsumerController, WebhookController } from 'src/controllers';
 import {
   CampaignService,
   NotificationService,
@@ -69,7 +69,7 @@ import { RabbitMQModule } from './rabbitmq.module';
     AppSettingsModule,
     RabbitMQModule,
   ],
-  controllers: [CampaignController, WebhookController],
+  controllers: [EventConsumerController, WebhookController],
   providers: [
     CampaignService,
     NotificationService,

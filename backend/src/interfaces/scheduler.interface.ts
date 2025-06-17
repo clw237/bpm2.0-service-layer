@@ -1,4 +1,4 @@
-import { UserPoolReminderDto } from 'dtos';
+//import { UserPoolReminderDto } from 'dtos';
 
 export interface IScheduleConfig {
   timezone?: string;
@@ -19,7 +19,7 @@ export interface ISchedulerListItem {
   schedule_type_code: string;
 }
 
-export interface IExecuteSchedulerType {
+/* export interface IExecuteSchedulerType {
   executeScheduler(
     SchedulerListItem: ISchedulerListItem,
     attribDefMap: Map<string, string>,
@@ -30,3 +30,4 @@ export type IExecuteSchedulerFunc = (
   SchedulerListItem: ISchedulerListItem,
   attribDefMap: Map<string, string>,
 ) => Promise<UserPoolReminderDto[]>;
+ */

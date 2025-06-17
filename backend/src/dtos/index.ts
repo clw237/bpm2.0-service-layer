@@ -1,3 +1,2 @@
-export * from './campaign.dto';
-export * from './user.dto';
+export * from './kfone-event.dto';
 export * from './webhook.dto';
